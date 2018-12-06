@@ -2,7 +2,7 @@
 title: CS109A Final Project
 ---
 
-This is the home page
+Group #100: Andreas Rousing and Evan DeFilipis
 
 ## Dog Breed Classification
 
