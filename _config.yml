@@ -1,6 +1,6 @@
 theme: jekyll-theme-primer
-title: Support Vector Olives
-description: Keeping Italian Olives Pure!
+title: Dog Breed Classification
+description: CS109A Final Project
 baseurl:
 markdown: kramdown
 kramdown:

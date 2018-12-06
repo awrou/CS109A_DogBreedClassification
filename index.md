@@ -1,12 +1,12 @@
 ---
-title: The Case of the Italian Olives
+title: CS109A Final Project
 ---
 
 This is the home page
 
-## Lets have fun
+## Dog Breed Classification
 
->here is a quote
+>quote on dog breeds
 
 Here is *emph* and **bold**.
 
