@@ -1,1 +1,1 @@
-CS10A Final project on Dog Breed Classification
+CS109A Final project on Dog Breed Classification
