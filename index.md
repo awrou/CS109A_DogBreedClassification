@@ -15,10 +15,6 @@ Identifying dog breeds correctly has implications not only for policies and dog 
 
 TODO: Finish adding motivation
 
-Here is some inline math $\alpha = \frac{\beta}{\gamma}$ and, of-course, E rules:
-
-$$ G_{\mu\nu} + \Lambda g_{\mu\nu}  = 8 \pi T_{\mu\nu} . $$
-
 ### Problem Statement
 The goal of this project is to devise and evaluate a deep convolutional neural net model, that can distinguish
 between the 120 pure breeds of dogs with an accuracy above 30% accuracy. We plan to
