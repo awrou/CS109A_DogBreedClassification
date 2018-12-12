@@ -10,6 +10,7 @@ title: Introduction and EDA
 
 
 ```python
+# import data and install relevant libraries for Google colab
 !pip install -q xlrd
 !git clone https://github.com/awrou/CS109A_FinalProject.git
 !pip install imageio
@@ -19,6 +20,7 @@ title: Introduction and EDA
 
 
 ```python
+# install Google API wrapper
 !pip install pydrive
 ```
 
@@ -26,6 +28,7 @@ title: Introduction and EDA
 
 
 ```python
+# import packages
 import pandas as pd
 import numpy as np
 import seaborn as sns
