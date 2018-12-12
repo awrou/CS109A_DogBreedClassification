@@ -3,7 +3,7 @@ nav_include: 2
 title: Introduction and EDA
 ---
 
-## Introduction and EDA
+## Contents
 {:.no_toc}
 *  
 {: toc}
