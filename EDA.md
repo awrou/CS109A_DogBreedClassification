@@ -1,6 +1,6 @@
 ---
 nav_include: 2
-title: Introduction and EDA
+title: EDA
 ---
 
 ## Contents
@@ -8,31 +8,59 @@ title: Introduction and EDA
 *  
 {: toc}
 
-## 1. Introduction and Description of Data
-
-### 0) Loading and Setup
 
 
 ```python
-# import data and install relevant libraries for Google colab
 !pip install -q xlrd
 !git clone https://github.com/awrou/CS109A_FinalProject.git
 !pip install imageio
 ```
 
 
+    Cloning into 'CS109A_FinalProject'...
+    remote: Enumerating objects: 41471, done.[K
+    remote: Counting objects: 100% (41471/41471), done.[K
+    remote: Compressing objects: 100% (21145/21145), done.[K
+    remote: Total 41471 (delta 20311), reused 41470 (delta 20310), pack-reused 0[K
+    Receiving objects: 100% (41471/41471), 775.33 MiB | 14.50 MiB/s, done.
+    Resolving deltas: 100% (20311/20311), done.
+    Checking out files: 100% (41169/41169), done.
+    Requirement already satisfied: imageio in /usr/local/lib/python3.6/dist-packages (2.4.1)
+    Requirement already satisfied: numpy in /usr/local/lib/python3.6/dist-packages (from imageio) (1.14.6)
+    Requirement already satisfied: pillow in /usr/local/lib/python3.6/dist-packages (from imageio) (4.0.0)
+    Requirement already satisfied: olefile in /usr/local/lib/python3.6/dist-packages (from pillow->imageio) (0.46)
+    
+
 
 
 ```python
-# install Google API wrapper
 !pip install pydrive
 ```
 
 
+    Collecting pydrive
+    [?25l  Downloading https://files.pythonhosted.org/packages/52/e0/0e64788e5dd58ce2d6934549676243dc69d982f198524be9b99e9c2a4fd5/PyDrive-1.3.1.tar.gz (987kB)
+    [K    100% |████████████████████████████████| 993kB 19.5MB/s 
+    [?25hRequirement already satisfied: google-api-python-client>=1.2 in /usr/local/lib/python3.6/dist-packages (from pydrive) (1.6.7)
+    Requirement already satisfied: oauth2client>=4.0.0 in /usr/local/lib/python3.6/dist-packages (from pydrive) (4.1.3)
+    Requirement already satisfied: PyYAML>=3.0 in /usr/local/lib/python3.6/dist-packages (from pydrive) (3.13)
+    Requirement already satisfied: uritemplate<4dev,>=3.0.0 in /usr/local/lib/python3.6/dist-packages (from google-api-python-client>=1.2->pydrive) (3.0.0)
+    Requirement already satisfied: httplib2<1dev,>=0.9.2 in /usr/local/lib/python3.6/dist-packages (from google-api-python-client>=1.2->pydrive) (0.11.3)
+    Requirement already satisfied: six<2dev,>=1.6.1 in /usr/local/lib/python3.6/dist-packages (from google-api-python-client>=1.2->pydrive) (1.11.0)
+    Requirement already satisfied: pyasn1>=0.1.7 in /usr/local/lib/python3.6/dist-packages (from oauth2client>=4.0.0->pydrive) (0.4.4)
+    Requirement already satisfied: rsa>=3.1.4 in /usr/local/lib/python3.6/dist-packages (from oauth2client>=4.0.0->pydrive) (4.0)
+    Requirement already satisfied: pyasn1-modules>=0.0.5 in /usr/local/lib/python3.6/dist-packages (from oauth2client>=4.0.0->pydrive) (0.2.2)
+    Building wheels for collected packages: pydrive
+      Running setup.py bdist_wheel for pydrive ... [?25l- \ done
+    [?25h  Stored in directory: /root/.cache/pip/wheels/fa/d2/9a/d3b6b506c2da98289e5d417215ce34b696db856643bad779f4
+    Successfully built pydrive
+    Installing collected packages: pydrive
+    Successfully installed pydrive-1.3.1
+    
+
 
 
 ```python
-# import packages
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -50,8 +78,7 @@ from keras.applications.vgg19 import VGG19
 from keras import models
 from keras import layers
 
-
-
+import re
 import os
 import imageio
 import cv2
@@ -61,9 +88,6 @@ import keras
 ```
 
 
-    Using TensorFlow backend.
-    
-
 
 
 ```python
@@ -71,7 +95,73 @@ os.chdir('CS109A_FinalProject/')
 ```
 
 
-# 1. Load Training and Test Data
+## 1. Introduction
+
+
+
+
+### 1.1 Description of Data
+
+
+
+This project is an attempt to accurately identify dog breeds from a dataset containing 120 different breeds.  This problem is a particularly challenging task for at least three reasons:
+
+
+1.   The dataset provided is part of the Stanford Dog's Dataset, which contains 20,000 images of dogs from 120 breeds, amounting to 200 images per breed.  Because this dataset will need to be split into a training and test set, the final training dataset used in this project contains only 120 dogs per breed.  This means that Convolutional Neural Nets (CNN), which are the standard tool for image classification, will have a difficult time given such a small amount of training data.  The solution to small amounts of training data is to either combine the dataset was images of dogs from other datasets, utilize image augmentation strategies, or use a neural net pretrained on larger sets of image data (e.g. ImageNet), and fine tune that net for our purposes.  In the current project, we use the latter two approaches. 
+
+2.   All dog breeds share very similar physical characteristics and features.  Specifically, there is higher variation within breeds than between them on features such as size, shape, and color.  This inter-breed diversity makes it very difficult to pick up on the idiosyncratic characteristics that differentiate between dog breeds without accidentally overfitting on some characterstic of the training set. 
+
+3. The images themselves are highly irregular -- some of them contain watermarks, some of them contain images of multiple dogs, some of them are in greyscale, while others are in sepia tone.  Discovering distinguishing features of dogs in light of all this noise will prove to be a challenging roblem.  
+
+
+### 1.2 Motivation
+
+Our goal was to more deeply understand the value of convolutional neural nets, exploring state-of-the-art architectures and techniques for extracting the maximum performance on image classification tasks.  
+
+The paper accompanying the Stanford Dog dataset purports to achieve an accuracy of around 22% on the test set.  Given that this dataset was released in 2011, we expected to be able to get a similar, if not better performance, by fine-tuning state-of-the-art models.  
+
+![alt text](http://vision.stanford.edu/aditya86/ImageNetDogs/mean_accuracy.png)
+
+We were particularly interested in this task, because it seems to be a harder version of standard classification tasks (like Dog vs. Cat) in that there are many more categories of possible outputs (120 breeds) and many of those outputs share a huge amount of characteristics.  For example, Silky Terriers and Yorkshire Terriers look nearly identical to the human eyes.  We were interested in seeing if a well-trained CNN had similar difficulties in distinguishing those breeds. 
+
+## 2. Loading Training and Test Data
+
+**First we load in meta-data from the Stanford Image Dataset.   The contents of this dataset include the following:**
+
+
+* **Number of categories:** 120 breeds
+* **Number of images:** 20,580 distinct images of dogs
+* **Annotations:**
+   * **Class labels**:  A numerical factor between 1-120, indicating which breed of dog a given animal corresponds to. 
+   * **Bounding boxes:** The x, y, height, and width coordinates demarcating a specific dog. 
+
+The [Stanford website](http://vision.stanford.edu/aditya86/ImageNetDogs/) further explains the exact structure of the data, which is necessary for understanding the below code:
+
+>>File Information:
+ - images/
+    -- Images of different breeds are in separate folders
+ - annotations/
+    -- Bounding box annotations of images
+ - file_list.mat
+    -- List of all files in the dataset
+ - train_list.mat
+    -- List and labels of all training images in dataset
+ - test_list.mat
+    -- List and labels of all test images in dataset
+
+>>Train splits:
+ In order to test with fewer than 100 images per class, the first
+ n indices for each class in train_list.mat were used, where n is
+ the number of training images per class.
+
+
+
+
+
+
+
+
+
 
 
 
@@ -111,8 +201,6 @@ print(file_list_train[0], "|", label_list_train[0], "|", annotation_list_train[0
 
 
 ```python
-import re
-
 # Build a function to extract the breed name from the file list
 def extract_breed(file_string):
     return re.search(r'\-(.*?)\/',file_string).group(1)
@@ -306,9 +394,13 @@ test_df.head()
 
 *   We use a RegEx query to extract the name of the dog breed from each file reference
 
-# Examine Image Dimensions
+## 3. Examine Image Dimensions
 
 
+
+Next, we read in each of the image files using the `imageio` library, and extract the shape of the file.  We store this shape data in `train_df` and `test_df`, which are the Pandas dataframes storing all meta-data relevant to referencing the directory of specific dog images.  
+
+We then display images in the training and test set by their height and width dimensions, which will help inform our approach to re-sizing and potentially removing some images from the training set. 
 
 
 
@@ -565,7 +657,7 @@ ax.set_xlabel('Width Dimension')
 
 
 
-![png](EDA_files/EDA_19_1.png)
+![png](EDA_files/EDA_25_1.png)
 
 
 
@@ -590,7 +682,7 @@ ax.set_xlabel('Width Dimension')
 
 
 
-![png](EDA_files/EDA_20_1.png)
+![png](EDA_files/EDA_26_1.png)
 
 
 **Comments: **
@@ -603,7 +695,10 @@ ax.set_xlabel('Width Dimension')
 
 
 
-#Examine Distribution of Dog Breeds
+## 4. Examine Distribution of Dog Breeds
+
+Next, we plot the distribution of dog breeds in the training and test set.  We expect the training set to contain an equal number of dog breeds (such that a classifier cannot  do well by merely by predicting an over-represented class, and so that the classifier has an equal chance of learning crucial features from each dog breed),.
+
 
 
 
@@ -621,7 +716,7 @@ ax = sns.countplot(y="Breed", data=train_df,
     
 
 
-![png](EDA_files/EDA_23_1.png)
+![png](EDA_files/EDA_29_1.png)
 
 
 
@@ -639,14 +734,16 @@ ax = sns.countplot(y="Breed", data=test_df,
     
 
 
-![png](EDA_files/EDA_24_1.png)
+![png](EDA_files/EDA_30_1.png)
 
 
 **Comments:**
 
-* We see that the training set contains 120 breeds of dogs, evenly distributed, with 100 example images per breed, for a total of 12,000 images in total.  In Deep Learning contexts, this is an extremely small dataset, so we should expect low levels of accuracy on the overall model. 
+* We see that the training set contains 120 breeds of dogs, evenly distributed, with 100 example images per breed, for a total of 12,000 images in total.  In Deep Learning contexts, this is an extremely small dataset, so we should expect low levels of accuracy on the overall model with a naive CNN.  
 
 * We see that the test set contains an uneven distribution of dog breeds.  
+
+Next, we create a function that generate a bounding box around each dog image by identifying specific XML tags embedded in the Annotations file for each image.  This bounding box is used to both visualize the image of interest, and also as a guide for cropping the dog image later in the project. 
 
 
 
@@ -690,29 +787,10 @@ for index, breed in tqdm(test_df.iterrows()):
 ```
 
 
-    0it [00:00, ?it/s]/usr/local/lib/python3.6/dist-packages/ipykernel_launcher.py:7: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame
-    
-    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
-      import sys
-    1it [00:00,  8.00it/s]
-
-    CPU times: user 7 µs, sys: 0 ns, total: 7 µs
-    Wall time: 14.3 µs
-    
-
-    12000it [13:34, 14.74it/s]
-    0it [00:00, ?it/s]/usr/local/lib/python3.6/dist-packages/ipykernel_launcher.py:10: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame
-    
-    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
-      # Remove the CWD from sys.path while we load stuff.
-    8580it [10:06, 13.10it/s]
-    
-
 
 
 ```python
+#we see the bounding box column has successfully been generated
 display(train_df.head())
 display(test_df.head())
 ```
@@ -886,7 +964,9 @@ display(test_df.head())
 </div>
 
 
-#Pickling and Unpickling the Data (Run this First On First Run)
+## 5. Pickling and Unpickling the Data 
+
+Because this data analysis was done in a Google Colab notebook, which limits the total amount of RAM and GPU time that can be used before crashing one's notebook... it is necessary to adopt good practices with respect to data preservation.  Here, we show the technique for saving a pickled version of the dataframe to one's Google Drive, and later recalling it when the Google notebook crashes.  If running the analysis for the first time, it is good to just start here to skip the time-intensive pre-processing steps.  
 
 
 
@@ -947,13 +1027,17 @@ test_df = pd.read_pickle('test_df_pickle')
 ```
 
 
-# Visualize First 20 Dog Breeds in Training Set
+## 6. Visualize Dog Breeds
+
+
+### 6.1 - Visualize First 20 Dog Breeds in Training Set
+
+Next, we visualize each of the dog breeds to see what we're working with, super-imposing the bounding box to examine whether or not it faithfully circumscribes the dog. 
 
 
 
 ```python
 import matplotlib.patches as patches
-
 
 # Generates a randomly shuffled dataframe
 # with one copy of each breed for plotting purposes
@@ -990,10 +1074,10 @@ for index, breed in train_df_plot[0:20].iterrows():
 
 
 
-![png](EDA_files/EDA_37_0.png)
+![png](EDA_files/EDA_47_0.png)
 
 
-# Visualize First 20 Dog Breeds in Test Set
+### 6.2 Visualize First 20 Dog Breeds in Test Set
 
 
 
@@ -1033,7 +1117,7 @@ for index, breed in test_df_plot[0:20].iterrows():
 
 
 
-![png](EDA_files/EDA_39_0.png)
+![png](EDA_files/EDA_49_0.png)
 
 
 **Comments:**
@@ -1045,7 +1129,7 @@ for index, breed in test_df_plot[0:20].iterrows():
 
 
 
-# Generate Sample Images with Filters
+## 7. Generate Sample Images with Filters
 
 
 
@@ -1117,312 +1201,31 @@ for i, ax in enumerate(axes.flatten()):
 
 
 
-![png](EDA_files/EDA_43_0.png)
+![png](EDA_files/EDA_53_0.png)
 
 
 **Comments**:
 
 * Here we just flex some of the filters and image transformations available in Scikitlearn. 
+* Of particular interest is to note the Sobel Transform which is meant to pick up on edges in our image.  It does this by convolving around an image, multiplying (dot product) a given convolution by a specific kernel matrix 
 
-#Baseline Model - Fully Connected Neural Nets
+The specific convolution kernels for a Sobel transform are described below. 
 
+![alt text](https://homepages.inf.ed.ac.uk/rbf/HIPR2/figs/sobmasks.gif)
 
+We will see that the first layer of our CNN's produce output very similar to a Sobel Transform, indicating that CNN's naturally pick up on edges from the outset. 
 
-```python
-# Further reshape x data for fully connected neural net
-def squish_square(x):
-    x_shp=x.reshape(x.shape[0], x.shape[1]*x.shape[2]*x.shape[3])
-    return x_shp
-```
+##22. Future Work
 
+In the future, we'd like to explore a huge amount of topics and ideas for improvement we stumbled upon in researching for this project.  
 
 
+*   As mentioned above, we had a concern that there may be something problematic about cropping both the training and test set images, even though the cropping boundaries were provided in the original dataset.  One potential idea is to train yet another classifier that is given bounding box information of a given image, and train a neural network to estimate a bounding box on a left-out test set.  You would then use these two classifiers in concert with one another -- one classifier would predict a bounding box around the dog and crop the image, and the other classifier would predict on the cropped image.  
 
-```python
-# Second round of pre-processing for train and validation
-X_train_shp=squish_square(X_train)
-print('New x_train shape: ', X_train_shp.shape)
-X_validation_shp=squish_square(X_validation)
-print('New x_val shape: ', X_validation_shp.shape)
-```
+*  We wanted to experiment with GANs and other non-CNN networks in order to get our feet wet.  Unfortunately, we couldn't find an application that was actuall suited for the prediction task at hand.  One potential application is the use of GANs to enhance image augmentation, which has been done as recently as [2017](https://arxiv.org/pdf/1801.06665.pdf) on the Stanford Dog dataset
 
+* We would like to, in the future, learn how to generate adverserial examples to force our classifier to misclassify a given image with the addition of some noise.  One interesting goal would be to craft a dog classifier that is robust to adverserial images. 
 
-    New x_train shape:  (8400, 49152)
-    New x_val shape:  (3600, 49152)
-    
+* It would be interesting to experiment with non CNN techniques, such as SVM's with linear kernels.  We have seen [papers ](https://web.stanford.edu/class/cs231a/prev_projects_2016/output%20[1].pdf)that utilize interesting techniques such as 'facial keypoint detection' to extract key characteristics about dog faces using a CNN before doing SVM analysis. 
 
 
-
-```python
-from keras.models import Sequential 
-from keras.layers import Dense
-
-# Model
-H = 100 # number of nodes in each hidden layer
-n_hidden_layers = 3
-input_dim = X_train_shp.shape[1:]
-output_dim =(y_train.shape[1])
-print('Number of nodes per hidden layer: ', H)
-print('Number of hidden layers: ', n_hidden_layers)
-print('input shape: ', input_dim)
-print('output shape: ', output_dim)
-
-model = Sequential() # create sequential multi-layer perceptron
-
-# layer 0
-model.add(Dense(H, input_shape=input_dim, 
-            activation='relu')) 
-
-# Add hidden layers
-for i in range(n_hidden_layers-1):
-    model.add(Dense(H, activation='relu')) 
-# Output layer
-model.add(Dense(output_dim, activation='sigmoid', ))
-```
-
-
-    Number of nodes per hidden layer:  100
-    Number of hidden layers:  3
-    input shape:  (49152,)
-    output shape:  120
-    
-
-
-
-```python
-# compile the model
-model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
-```
-
-
-
-
-```python
-model.summary()
-```
-
-
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    dense_5 (Dense)              (None, 100)               4915300   
-    _________________________________________________________________
-    dense_6 (Dense)              (None, 100)               10100     
-    _________________________________________________________________
-    dense_7 (Dense)              (None, 100)               10100     
-    _________________________________________________________________
-    dense_8 (Dense)              (None, 120)               12120     
-    =================================================================
-    Total params: 4,947,620
-    Trainable params: 4,947,620
-    Non-trainable params: 0
-    _________________________________________________________________
-    
-
-
-
-```python
-# fit the model
-epochs=30
-fcn0=model.fit(X_train_shp, y_train, 
-          epochs=epochs, 
-          validation_data=(X_validation_shp, y_validation), 
-          verbose=1) #callbacks = callbacks_list
-```
-
-
-
-
-```python
-#Plot loss and accuracy to check for overfitting
-fig, ax = plt.subplots(1, 2, figsize=(15,6))
-ax[0].plot(np.sqrt(fcn0.history['loss']), '--', label='Training Loss')
-ax[0].plot(np.sqrt(fcn0.history['val_loss']), label='Validation Loss')
-ax[0].set_ylabel('Binary Crossentropy', fontsize=14)
-
-ax[1].plot(np.sqrt(fcn0.history['acc']), '--', label='Training Accuracy')
-ax[1].plot(np.sqrt(fcn0.history['val_acc']), label='Validation Accuracy')
-ax[1].set_ylabel('Classification Accuracy', fontsize=14)
-
-for i in range(2):
-    ax[i].legend()
-    ax[i].set_xlabel('Epochs', fontsize=14);
-
-fig.suptitle('First Attempt at FCN', fontsize=16);
-```
-
-
-
-![png](EDA_files/EDA_52_0.png)
-
-
-
-
-```python
-print('Validation accuracy at final epoch: ', fcn0.history['val_acc'][-1])
-print('Best validation accuracy: ', np.array(fcn0.history['val_acc']).max())
-```
-
-
-    Validation accuracy at final epoch:  0.035
-    Best validation accuracy:  0.03666666666666667
-    
-
-As a base model, we created a fully-connected neural network similar to that implemented in homework 9 for number classification. Guessing 3 layers and 100 nodes per layer as hyperparameters and training for 30 epochs, we acheived a 3.5% validation accuracy on our first attempt.
-
-
-
-```python
-def make_reg_NN(x=X_train_shp, y=y_train, H=100, n_hidden_layers = 3, \
-                x_val=X_validation_shp, y_val=y_validation, \
-                eps=40, verb=0):
-
-    input_dim = X_train_shp.shape[1:]
-    output_dim =(y_train.shape[1])
-    print('Number of nodes per hidden layer: ', H)
-    print('Number of hidden layers: ', n_hidden_layers)
-    print('input shape: ', input_dim)
-    print('output shape: ', output_dim)
-
-    model = Sequential() # create sequential multi-layer perceptron
-
-    #layer 0
-    model.add(Dense(H, input_shape=input_dim, 
-                activation='relu')) 
-
-    # Add hidden layers
-    for i in range(n_hidden_layers-1):
-        model.add(Dense(H, activation='relu')) 
-        
-    # Output layer
-    model.add(Dense(output_dim, activation='sigmoid', ))
-    
-    # compile the model 
-    model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
-    
-    print(model.summary())
-    
-    # fit the model
-    fitmod=model.fit(x, y, 
-          epochs=epochs, 
-          validation_data=(x_val, y_val), 
-          verbose=verb)
-    
-    # print validation accuracy on last epoch
-    print('Validation accuracy: :', fitmod.history['val_acc'][-1])
-    
-    return model, fitmod
-```
-
-
-
-
-```python
-# Create a dictionary to store models
-fcn_models = {}
-fcn_models['100node_3layer']=fcn0
-
-# Create a dictionary to store val records for later comparison
-fcn_hist = {}
-fcn_hist['100node_3layer']=fcn0.history
-```
-
-
-
-
-```python
-fcn_models['150node_3layer'], fcn_hist['150node_3layer']=\
-                        make_reg_NN(H=150, n_hidden_layers = 3)
-```
-
-
-    Number of nodes per hidden layer:  150
-    Number of hidden layers:  3
-    input shape:  (49152,)
-    output shape:  120
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    dense_13 (Dense)             (None, 150)               7372950   
-    _________________________________________________________________
-    dense_14 (Dense)             (None, 150)               22650     
-    _________________________________________________________________
-    dense_15 (Dense)             (None, 150)               22650     
-    _________________________________________________________________
-    dense_16 (Dense)             (None, 120)               18120     
-    =================================================================
-    Total params: 7,436,370
-    Trainable params: 7,436,370
-    Non-trainable params: 0
-    _________________________________________________________________
-    None
-    Validation accuracy: : 0.025
-    
-
-
-
-```python
-fcn_models['100node_3layer'], fcn_hist['100node_3layer']=\
-                        make_reg_NN(H=100, n_hidden_layers = 3)
-```
-
-
-    Number of nodes per hidden layer:  100
-    Number of hidden layers:  3
-    input shape:  (49152,)
-    output shape:  120
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    dense_21 (Dense)             (None, 100)               4915300   
-    _________________________________________________________________
-    dense_22 (Dense)             (None, 100)               10100     
-    _________________________________________________________________
-    dense_23 (Dense)             (None, 100)               10100     
-    _________________________________________________________________
-    dense_24 (Dense)             (None, 120)               12120     
-    =================================================================
-    Total params: 4,947,620
-    Trainable params: 4,947,620
-    Non-trainable params: 0
-    _________________________________________________________________
-    None
-    Validation accuracy: : 0.030833333333333334
-    
-
-
-
-```python
-fcn_models['100node_5layer'], fcn_hist['100node_5layer']=\
-                        make_reg_NN(H=100, n_hidden_layers = 5)
-```
-
-
-    Number of nodes per hidden layer:  100
-    Number of hidden layers:  5
-    input shape:  (49152,)
-    output shape:  120
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    dense_25 (Dense)             (None, 100)               4915300   
-    _________________________________________________________________
-    dense_26 (Dense)             (None, 100)               10100     
-    _________________________________________________________________
-    dense_27 (Dense)             (None, 100)               10100     
-    _________________________________________________________________
-    dense_28 (Dense)             (None, 100)               10100     
-    _________________________________________________________________
-    dense_29 (Dense)             (None, 100)               10100     
-    _________________________________________________________________
-    dense_30 (Dense)             (None, 120)               12120     
-    =================================================================
-    Total params: 4,967,820
-    Trainable params: 4,967,820
-    Non-trainable params: 0
-    _________________________________________________________________
-    None
-    Validation accuracy: : 0.0275
-    
-
-Keeping with basic fully-connected network strategy, we increased the number of epochs from 30 and 40 and tried adjusting both the number of layers and number of nodes per layer. These variations yeilded even lower validation performance than our original FCN, with validation accuracies ranging from 2.5-3.1%.
