@@ -10,6 +10,10 @@ title: Introduction and EDA
 
 
 
+## 0. Initialization
+
+
+
 ```python
 !pip install -q xlrd
 !git clone https://github.com/awrou/CS109A_FinalProject.git
@@ -17,46 +21,12 @@ title: Introduction and EDA
 ```
 
 
-    Cloning into 'CS109A_FinalProject'...
-    remote: Enumerating objects: 41471, done.[K
-    remote: Counting objects: 100% (41471/41471), done.[K
-    remote: Compressing objects: 100% (21145/21145), done.[K
-    remote: Total 41471 (delta 20311), reused 41470 (delta 20310), pack-reused 0[K
-    Receiving objects: 100% (41471/41471), 775.33 MiB | 14.50 MiB/s, done.
-    Resolving deltas: 100% (20311/20311), done.
-    Checking out files: 100% (41169/41169), done.
-    Requirement already satisfied: imageio in /usr/local/lib/python3.6/dist-packages (2.4.1)
-    Requirement already satisfied: numpy in /usr/local/lib/python3.6/dist-packages (from imageio) (1.14.6)
-    Requirement already satisfied: pillow in /usr/local/lib/python3.6/dist-packages (from imageio) (4.0.0)
-    Requirement already satisfied: olefile in /usr/local/lib/python3.6/dist-packages (from pillow->imageio) (0.46)
-    
-
 
 
 ```python
 !pip install pydrive
 ```
 
-
-    Collecting pydrive
-    [?25l  Downloading https://files.pythonhosted.org/packages/52/e0/0e64788e5dd58ce2d6934549676243dc69d982f198524be9b99e9c2a4fd5/PyDrive-1.3.1.tar.gz (987kB)
-    [K    100% |████████████████████████████████| 993kB 19.5MB/s 
-    [?25hRequirement already satisfied: google-api-python-client>=1.2 in /usr/local/lib/python3.6/dist-packages (from pydrive) (1.6.7)
-    Requirement already satisfied: oauth2client>=4.0.0 in /usr/local/lib/python3.6/dist-packages (from pydrive) (4.1.3)
-    Requirement already satisfied: PyYAML>=3.0 in /usr/local/lib/python3.6/dist-packages (from pydrive) (3.13)
-    Requirement already satisfied: uritemplate<4dev,>=3.0.0 in /usr/local/lib/python3.6/dist-packages (from google-api-python-client>=1.2->pydrive) (3.0.0)
-    Requirement already satisfied: httplib2<1dev,>=0.9.2 in /usr/local/lib/python3.6/dist-packages (from google-api-python-client>=1.2->pydrive) (0.11.3)
-    Requirement already satisfied: six<2dev,>=1.6.1 in /usr/local/lib/python3.6/dist-packages (from google-api-python-client>=1.2->pydrive) (1.11.0)
-    Requirement already satisfied: pyasn1>=0.1.7 in /usr/local/lib/python3.6/dist-packages (from oauth2client>=4.0.0->pydrive) (0.4.4)
-    Requirement already satisfied: rsa>=3.1.4 in /usr/local/lib/python3.6/dist-packages (from oauth2client>=4.0.0->pydrive) (4.0)
-    Requirement already satisfied: pyasn1-modules>=0.0.5 in /usr/local/lib/python3.6/dist-packages (from oauth2client>=4.0.0->pydrive) (0.2.2)
-    Building wheels for collected packages: pydrive
-      Running setup.py bdist_wheel for pydrive ... [?25l- \ done
-    [?25h  Stored in directory: /root/.cache/pip/wheels/fa/d2/9a/d3b6b506c2da98289e5d417215ce34b696db856643bad779f4
-    Successfully built pydrive
-    Installing collected packages: pydrive
-    Successfully installed pydrive-1.3.1
-    
 
 
 
@@ -657,7 +627,7 @@ ax.set_xlabel('Width Dimension')
 
 
 
-![png](EDA_files/EDA_25_1.png)
+![png](EDA_files/EDA_26_1.png)
 
 
 
@@ -682,7 +652,7 @@ ax.set_xlabel('Width Dimension')
 
 
 
-![png](EDA_files/EDA_26_1.png)
+![png](EDA_files/EDA_27_1.png)
 
 
 **Comments: **
@@ -716,7 +686,7 @@ ax = sns.countplot(y="Breed", data=train_df,
     
 
 
-![png](EDA_files/EDA_29_1.png)
+![png](EDA_files/EDA_30_1.png)
 
 
 
@@ -734,7 +704,7 @@ ax = sns.countplot(y="Breed", data=test_df,
     
 
 
-![png](EDA_files/EDA_30_1.png)
+![png](EDA_files/EDA_31_1.png)
 
 
 **Comments:**
@@ -1074,7 +1044,7 @@ for index, breed in train_df_plot[0:20].iterrows():
 
 
 
-![png](EDA_files/EDA_47_0.png)
+![png](EDA_files/EDA_48_0.png)
 
 
 ### 6.2 Visualize First 20 Dog Breeds in Test Set
@@ -1117,7 +1087,7 @@ for index, breed in test_df_plot[0:20].iterrows():
 
 
 
-![png](EDA_files/EDA_49_0.png)
+![png](EDA_files/EDA_50_0.png)
 
 
 **Comments:**
@@ -1201,7 +1171,7 @@ for i, ax in enumerate(axes.flatten()):
 
 
 
-![png](EDA_files/EDA_53_0.png)
+![png](EDA_files/EDA_54_0.png)
 
 
 **Comments**:
@@ -1214,18 +1184,3 @@ The specific convolution kernels for a Sobel transform are described below.
 ![alt text](https://homepages.inf.ed.ac.uk/rbf/HIPR2/figs/sobmasks.gif)
 
 We will see that the first layer of our CNN's produce output very similar to a Sobel Transform, indicating that CNN's naturally pick up on edges from the outset. 
-
-##22. Future Work
-
-In the future, we'd like to explore a huge amount of topics and ideas for improvement we stumbled upon in researching for this project.  
-
-
-*   As mentioned above, we had a concern that there may be something problematic about cropping both the training and test set images, even though the cropping boundaries were provided in the original dataset.  One potential idea is to train yet another classifier that is given bounding box information of a given image, and train a neural network to estimate a bounding box on a left-out test set.  You would then use these two classifiers in concert with one another -- one classifier would predict a bounding box around the dog and crop the image, and the other classifier would predict on the cropped image.  
-
-*  We wanted to experiment with GANs and other non-CNN networks in order to get our feet wet.  Unfortunately, we couldn't find an application that was actuall suited for the prediction task at hand.  One potential application is the use of GANs to enhance image augmentation, which has been done as recently as [2017](https://arxiv.org/pdf/1801.06665.pdf) on the Stanford Dog dataset
-
-* We would like to, in the future, learn how to generate adverserial examples to force our classifier to misclassify a given image with the addition of some noise.  One interesting goal would be to craft a dog classifier that is robust to adverserial images. 
-
-* It would be interesting to experiment with non CNN techniques, such as SVM's with linear kernels.  We have seen [papers ](https://web.stanford.edu/class/cs231a/prev_projects_2016/output%20[1].pdf)that utilize interesting techniques such as 'facial keypoint detection' to extract key characteristics about dog faces using a CNN before doing SVM analysis. 
-
-
