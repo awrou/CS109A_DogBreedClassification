@@ -18,7 +18,7 @@ In this work several custom built and existing model architectures have been tes
 
 In order to get to this accuracy several models with modified architectures, data augmentation, reshaping, cropping and modification had to be performed in order to increse the accuracy. A large 51% increase in validation accuracy was seen between the fully connected baseline NN and the final XCeption Model with Data Augmentation and Cropped Images.
 
-## 3. Conclusion
+## 2. Conclusion
 
 A couple of concluding words to summarize what has already been said in the preceding sections:
 
