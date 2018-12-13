@@ -8,6 +8,10 @@ title: Introduction and EDA
 *  
 {: toc}
 
+## 1. Introduction and Description of Data
+
+### 0) Loading and Setup
+
 
 ```python
 # import data and install relevant libraries for Google colab
@@ -67,7 +71,7 @@ os.chdir('CS109A_FinalProject/')
 ```
 
 
-# Load Training and Test Data
+# 1. Load Training and Test Data
 
 
 
