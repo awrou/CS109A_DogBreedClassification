@@ -3,12 +3,7 @@ nav_include: 5
 title: Future Work
 ---
 
-## Contents
-{:.no_toc}
-*  
-{: toc}
-
-## 22. Future Work
+## Future Work
 
 In the future, we'd like to explore a huge amount of topics and ideas for improvement we stumbled upon in researching for this project.  
 
