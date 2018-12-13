@@ -8,7 +8,7 @@ title: Future Work
 *  
 {: toc}
 
-##22. Future Work
+## 22. Future Work
 
 In the future, we'd like to explore a huge amount of topics and ideas for improvement we stumbled upon in researching for this project.  
 
