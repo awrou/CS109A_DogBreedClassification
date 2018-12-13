@@ -8,7 +8,27 @@ title: Literature
 *  
 {: toc}
 
-### References
+### Informative Websites
+
+https://hacktilldawn.com/2016/09/25/inception-modules-explained-and-implemented/
+
+https://medium.com/nanonets/how-to-use-deep-learning-when-you-have-limited-data-part-2-data-augmentation-c26971dc8ced
+
+https://distill.pub/2017/feature-visualization/
+
+https://neurdiness.wordpress.com/2018/05/17/deep-convolutional-neural-networks-as-models-of-the-visual-system-qa/
+
+https://www.kaggle.com/orangutan/keras-vgg19-starter
+
+### Github Repos
+
+https://github.com/stormy-ua/dog-breeds-classification
+
+https://github.com/kcirtap2014/stanford_dog_breed
+
+https://github.com/saksham789/DOG-BREED-CLASSIFICATION-STANFORD-DOG-DATASET
+
+### Subject References
 [1] J. M. Cornelissen and H. Hopster, “Dog bites in the netherlands: A study of victims, injuries, circumstances and aggressors to support evaluation of breed specific legislation,” The Veterinary Journal, vol. 186, no. 3, pp. 292–298, 2010. <br>
 [2] N. Creedon and P. S. Ó. Súilleabháin, “Dog bite injuries to humans and the use of breedspecific legislation: A comparison of bites from legislated and non-legislated dog breeds,” Irish veterinary journal, vol. 70, no. 1, p. 23, 2017. <br>
 [3] T. King, L. C. Marston, and P. C. Bennett, “Breeding dogs for beauty and behaviour: Why
