@@ -1,6 +1,6 @@
 ---
 nav_include: 2
-title: EDA
+title: Introduction and EDA
 ---
 
 ## Contents
